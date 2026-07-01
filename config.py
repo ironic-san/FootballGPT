@@ -15,7 +15,7 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 
 APP_NAME = "FootballGPT"
 
-VERSION = "2.1"
+VERSION = "3.0"
 
 # --------------------------------------------------
 # AI Models (Priority Order)

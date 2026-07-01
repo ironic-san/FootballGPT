@@ -3,7 +3,6 @@ import streamlit as st
 from chatbot import FootballChatbot
 from config import APP_NAME, VERSION
 
-
 # --------------------------------------------------
 # Page Configuration
 # --------------------------------------------------
@@ -47,18 +46,36 @@ with st.sidebar:
     st.subheader("📖 About")
 
     st.markdown("""
-FootballGPT is your personal AI football assistant.
+FootballGPT combines **Gemini AI** with a **Retrieval-Augmented Generation (RAG)** system to answer football questions using official football documents.
 
-It can help you with:
+### It can answer questions about:
 
 - ⚽ Players
 - 🏆 Clubs
 - 🌍 FIFA World Cup
 - 🇪🇺 UEFA Competitions
-- 📚 Football Rules
-- 🎯 Tactics & Formations
+- 📚 Laws of the Game
+- 🎯 Football Tactics
 - 📈 Player Comparisons
 - 🎮 EA Sports FC / FIFA Games
+""")
+
+    st.markdown("---")
+
+    st.subheader("📚 Knowledge Base")
+
+    st.markdown("""
+✅ IFAB Laws of the Game
+
+✅ FIFA World Cup History
+
+✅ FIFA World Cup Regulations
+
+✅ FIFA World Cup Anecdotes
+
+✅ UEFA Champions League Regulations
+
+✅ Football Intelligence & Tactics
 """)
 
     st.markdown("---")
@@ -72,11 +89,17 @@ It can help you with:
 
 ✅ Multiple AI Models
 
+✅ Source Citations
+
 ✅ Streamlit Chat Interface
 
-🔜 Football RAG
+✅ Multi-Document RAG (EARLY STAGE 🔁)
 
 🔜 Live Football API
+
+🔜 Match Statistics
+
+🔜 Transfer News
 """)
 
     st.markdown("---")
@@ -95,7 +118,7 @@ It can help you with:
 
     if st.button("🗑️ New Chat", use_container_width=True):
 
-        st.session_state.bot = FootballChatbot()
+        st.session_state.bot.clear_history()
 
         st.session_state.messages = []
 
@@ -107,7 +130,7 @@ It can help you with:
 
 st.title("⚽ FootballGPT")
 
-st.caption("Your Personal AI Football Assistant")
+st.caption("AI-Powered Football Assistant with Retrieval-Augmented Generation")
 
 # --------------------------------------------------
 # Display Previous Messages
@@ -127,7 +150,9 @@ prompt = st.chat_input("Ask anything about football...")
 
 if prompt:
 
+    # -------------------------
     # User Message
+    # -------------------------
 
     st.session_state.messages.append(
         {
@@ -140,19 +165,61 @@ if prompt:
 
         st.markdown(prompt)
 
+    # -------------------------
     # Assistant Message
+    # -------------------------
 
     with st.chat_message("assistant"):
 
-        with st.spinner("⚽ FootballGPT is thinking..."):
+        with st.spinner("⚽ Searching football knowledge..."):
 
             result = st.session_state.bot.chat(prompt)
+
+            st.success("📚 Answer generated using Football Knowledge Base")
 
             st.caption(
                 f"🤖 {result['model']} • {result['provider']}"
             )
 
             st.markdown(result["answer"])
+
+            if result.get("sources"):
+
+                with st.expander("📖 Sources Used"):
+
+                    for source in result["sources"]:
+
+                        if "laws_of_the_game" in source:
+
+                            st.write("📘 Laws of the Game — " + source.split("(")[1].replace(")", ""))
+
+                        elif "fifa_world_cup_history" in source:
+
+                            st.write("🌍 FIFA World Cup History — " + source.split("(")[1].replace(")", ""))
+
+                        elif "fifa_world_cup_regulations" in source:
+
+                            st.write("📜 FIFA World Cup Regulations — " + source.split("(")[1].replace(")", ""))
+
+                        elif "fifa_world_cup_anecdotes" in source:
+
+                            st.write("📖 FIFA World Cup Anecdotes — " + source.split("(")[1].replace(")", ""))
+
+                        elif "uefa_champions_league_regulations" in source:
+
+                            st.write("🏆 UEFA Champions League Regulations — " + source.split("(")[1].replace(")", ""))
+
+                        elif "football_intelligence_and_tactics" in source:
+
+                            st.write("🎯 Football Intelligence & Tactics — " + source.split("(")[1].replace(")", ""))
+
+                        else:
+
+                            st.write(source)
+
+    # -------------------------
+    # Save Assistant Message
+    # -------------------------
 
     st.session_state.messages.append(
         {
